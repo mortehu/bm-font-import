@@ -133,5 +133,7 @@ main (int argc, char **argv)
   for (i = 0xa1; i <= 0xff; ++i)
     fi_LoadGlyph (i);
 
+  GLYPH_Export (stdout);
+
   return EXIT_SUCCESS;
 }

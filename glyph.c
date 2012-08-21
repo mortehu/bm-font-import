@@ -125,3 +125,35 @@ GLYPH_Get (unsigned int code, struct FONT_Glyph *glyph,
   *u = glyphs[code].u;
   *v = glyphs[code].v;
 }
+
+static void
+glyph_WriteS16 (FILE *output, int v)
+{
+  fputc (v & 0xff, output);
+  fputc ((v & 0xff00) >> 8, output);
+}
+
+void
+GLYPH_Export (FILE *output)
+{
+  size_t i;
+
+  glyph_WriteS16 (output, GLYPH_ATLAS_SIZE);
+
+  fwrite (bitmap, sizeof (*bitmap), GLYPH_ATLAS_SIZE * GLYPH_ATLAS_SIZE, output);
+
+  for (i = 0; i < sizeof (glyphs) / sizeof (glyphs[0]); ++i)
+    {
+      if (!(loadedGlyphs[i >> 5] & (1 << (i & 31))))
+        continue;
+
+      glyph_WriteS16 (output, i);
+      glyph_WriteS16 (output, glyphs[i].xOffset);
+      glyph_WriteS16 (output, glyphs[i].width);
+      glyph_WriteS16 (output, glyphs[i].height);
+      glyph_WriteS16 (output, glyphs[i].x);
+      glyph_WriteS16 (output, glyphs[i].y);
+      glyph_WriteS16 (output, glyphs[i].u);
+      glyph_WriteS16 (output, glyphs[i].v);
+    }
+}

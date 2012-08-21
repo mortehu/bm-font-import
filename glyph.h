@@ -18,4 +18,7 @@ void
 GLYPH_Get (unsigned int code, struct FONT_Glyph *glyph,
            uint16_t *u, uint16_t *v);
 
+void
+GLYPH_Export (FILE *output);
+
 #endif /* GLYPH_H_ */
