@@ -75,7 +75,12 @@ FONT_PathsForFont (char ***paths, const char *name, unsigned int size, unsigned 
       FcPatternGetString (fontSet->fonts[i], FC_FILE, 0, &path);
 
       if (path)
-        (*paths)[result++] = strdup ((const char *) path);
+        {
+          (*paths)[result] = malloc (strlen ((const char *) path) + 1);
+          strcpy ((*paths)[result], (const char *) path);
+
+          ++result;
+        }
     }
 
   FcFontSetDestroy (fontSet);
