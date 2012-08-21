@@ -20,6 +20,9 @@ static int fi_fontSize = 13;
 
 static struct option long_options[] =
 {
+  { "font" ,    required_argument, 0,                'f' },
+  { "size" ,    required_argument, 0,                's' },
+  { "weight" ,  required_argument, 0,                'w' },
   { "version",        no_argument, &fi_printVersion, 1 },
   { "help",           no_argument, &fi_printHelp,    1 },
   { 0, 0, 0, 0 }
@@ -44,13 +47,44 @@ int
 main (int argc, char **argv)
 {
   int i;
+  char *endptr;
 
   setlocale(LC_ALL, "en_US.UTF-8");
 
-  while ((i = getopt_long (argc, argv, "", long_options, 0)) != -1)
+  while ((i = getopt_long (argc, argv, "f:s:w:", long_options, 0)) != -1)
     {
       switch (i)
         {
+        case 'f':
+
+          fi_fontName = optarg;
+
+          break;
+
+        case 's':
+
+          fi_fontSize = strtol (optarg, &endptr, 0);
+
+          if (*endptr)
+            errx (EXIT_FAILURE, "Invalid size \"%s\".  Expected positive integer", optarg);
+
+          if (fi_fontSize <= 0)
+            errx (EXIT_FAILURE, "Invalid size %d.  Expected positive integer", fi_fontSize);
+
+          break;
+
+        case 'w':
+
+          fi_fontWeight = strtol (optarg, &endptr, 0);
+
+          if (*endptr)
+            errx (EXIT_FAILURE, "Invalid weight \"%s\".  Expected positive integer", optarg);
+
+          if (fi_fontWeight <= 0)
+            errx (EXIT_FAILURE, "Invalid weight %d.  Expected positive integer", fi_fontWeight);
+
+          break;
+
         case 0:
 
           break;
@@ -67,6 +101,9 @@ main (int argc, char **argv)
     {
       printf ("Usage: %s [OPTION]...\n"
              "\n"
+             "  -f, --font=FONT            set font name\n"
+             "  -s, --size=SIZE            set font size\n"
+             "  -w, --weight=WEIGHT        set font weight\n"
              "      --help     display this help and exit\n"
              "      --version  display version information\n"
              "\n"
