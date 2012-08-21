@@ -14,13 +14,14 @@
 .deps
 .libs
 /Makefile
+/bm-font-import
+/bm-font-render
 /config.h
 /config.h.in
 /configure
 Makefile
 Makefile.in
 aclocal.m4
-bm-font-import
 configure
 depcomp
 install-sh

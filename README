@@ -1,0 +1,3 @@
+To test a font using only the console, try a command line like this:
+
+  ./bm-font-import -f 'DejaVu Sans' -w 100 -s 19 | ./bm-font-render 'Badger'
