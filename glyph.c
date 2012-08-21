@@ -147,6 +147,9 @@ GLYPH_Export (FILE *output)
       if (!(loadedGlyphs[i >> 5] & (1 << (i & 31))))
         continue;
 
+      if (glyphs[i].width <= 0 && glyphs[i].height <= 0)
+        continue;
+
       glyph_WriteS16 (output, i);
       glyph_WriteS16 (output, glyphs[i].xOffset);
       glyph_WriteS16 (output, glyphs[i].width);
