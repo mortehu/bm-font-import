@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <err.h>
+
 #include "glyph.h"
 
 struct glyph_Data
@@ -60,9 +62,9 @@ GLYPH_Add (unsigned int code, struct FONT_Glyph *glyph)
             }
         }
 
-      if (best_u == GLYPH_ATLAS_SIZE)
+      if (best_u == GLYPH_ATLAS_SIZE || best_v + glyph->height > GLYPH_ATLAS_SIZE)
         {
-          fprintf (stderr, "No room for glyph of size %ux%u\n", glyph->width, glyph->height);
+          errx (EXIT_FAILURE, "Atlas is full: No room for glyph of size %ux%u", glyph->width, glyph->height);
 
           return;
         }
