@@ -3,7 +3,7 @@
 
 #include "font.h"
 
-#define GLYPH_ATLAS_SIZE 512
+#define GLYPH_ATLAS_SIZE 128
 
 void
 GLYPH_Init (void);
@@ -19,6 +19,6 @@ GLYPH_Get (unsigned int code, struct FONT_Glyph *glyph,
            uint16_t *u, uint16_t *v);
 
 void
-GLYPH_Export (FILE *output);
+GLYPH_Export (const char* format, FILE *output);
 
 #endif /* GLYPH_H_ */

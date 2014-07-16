@@ -32,6 +32,7 @@
 static int fi_printVersion;
 static int fi_printHelp;
 static const char *fi_fontName = "DejaVu Sans";
+static const char *fi_format = "binary";
 static int fi_fontWeight = 200;
 static int fi_fontSize = 13;
 
@@ -40,6 +41,7 @@ static struct option long_options[] =
   { "font" ,    required_argument, 0,                'f' },
   { "size" ,    required_argument, 0,                's' },
   { "weight" ,  required_argument, 0,                'w' },
+  { "format",   required_argument, 0,                'F' },
   { "version",        no_argument, &fi_printVersion, 1 },
   { "help",           no_argument, &fi_printHelp,    1 },
   { 0, 0, 0, 0 }
@@ -102,6 +104,12 @@ main (int argc, char **argv)
 
           break;
 
+        case 'F':
+
+          fi_format = optarg;
+
+          break;
+
         case 0:
 
           break;
@@ -150,7 +158,7 @@ main (int argc, char **argv)
   for (i = 0xa1; i <= 0xff; ++i)
     fi_LoadGlyph (i);
 
-  GLYPH_Export (stdout);
+  GLYPH_Export (fi_format, stdout);
 
   return EXIT_SUCCESS;
 }

@@ -151,29 +151,67 @@ glyph_WriteS16 (FILE *output, int v)
 }
 
 void
-GLYPH_Export (FILE *output)
+GLYPH_Export (const char* format, FILE *output)
 {
   size_t i;
 
-  glyph_WriteS16 (output, GLYPH_ATLAS_SIZE);
-
-  fwrite (bitmap, sizeof (*bitmap), GLYPH_ATLAS_SIZE * GLYPH_ATLAS_SIZE, output);
-
-  for (i = 0; i < sizeof (glyphs) / sizeof (glyphs[0]); ++i)
+  if (!strcmp(format, "binary"))
     {
-      if (!(loadedGlyphs[i >> 5] & (1 << (i & 31))))
-        continue;
+      glyph_WriteS16 (output, GLYPH_ATLAS_SIZE);
 
-      if (glyphs[i].width <= 0 && glyphs[i].height <= 0)
-        continue;
+      fwrite (bitmap, sizeof (*bitmap), GLYPH_ATLAS_SIZE * GLYPH_ATLAS_SIZE, output);
 
-      glyph_WriteS16 (output, i);
-      glyph_WriteS16 (output, glyphs[i].xOffset);
-      glyph_WriteS16 (output, glyphs[i].width);
-      glyph_WriteS16 (output, glyphs[i].height);
-      glyph_WriteS16 (output, glyphs[i].x);
-      glyph_WriteS16 (output, glyphs[i].y);
-      glyph_WriteS16 (output, glyphs[i].u);
-      glyph_WriteS16 (output, glyphs[i].v);
+      for (i = 0; i < sizeof (glyphs) / sizeof (glyphs[0]); ++i)
+        {
+          if (!(loadedGlyphs[i >> 5] & (1 << (i & 31))))
+            continue;
+
+          if (glyphs[i].width <= 0 || glyphs[i].height <= 0)
+            continue;
+
+          glyph_WriteS16 (output, i);
+          glyph_WriteS16 (output, glyphs[i].xOffset);
+          glyph_WriteS16 (output, glyphs[i].width);
+          glyph_WriteS16 (output, glyphs[i].height);
+          glyph_WriteS16 (output, glyphs[i].x);
+          glyph_WriteS16 (output, glyphs[i].y);
+          glyph_WriteS16 (output, glyphs[i].u);
+          glyph_WriteS16 (output, glyphs[i].v);
+        }
+    }
+  else if (!strcmp(format, "c"))
+    {
+      fprintf (output, "struct Glyph glyphs[256] = {\n");
+
+      for (i = 0; i < 256; ++i)
+        {
+          if (!(loadedGlyphs[i >> 5] & (1 << (i & 31)))
+              || glyphs[i].width <= 0 || glyphs[i].height <= 0)
+            {
+              fprintf (output, "  { 0, 0, 0, 0, 0, 0, 0 },\n");
+              continue;
+            }
+
+          fprintf (output, "  { %d, %d, %d, %d, %d, %d, %d },\n",
+                   glyphs[i].xOffset, glyphs[i].width, glyphs[i].height,
+                   glyphs[i].x, glyphs[i].y, glyphs[i].u, glyphs[i].v);
+        }
+      fprintf (output, "};\n\n");
+      fprintf (output, "const unsigned char bitmap[] = {");
+
+      for (i = 0; i < GLYPH_ATLAS_SIZE * GLYPH_ATLAS_SIZE; ++i)
+        {
+          if (!(i % 4))
+            fprintf (output, "\n ");
+          fprintf(output, " 0x%02x, 0x%02x, 0x%02x, 0x%02x,",
+                  (bitmap[i] >> 24) & 0xff, (bitmap[i] >> 16) & 0xff,
+                  (bitmap[i] >> 8) & 0xff, bitmap[i] & 0xff);
+        }
+
+      fprintf(output, "\n};\n");
+    }
+  else
+    {
+      errx(EXIT_FAILURE, "Unknown output format '%s'", format);
     }
 }
